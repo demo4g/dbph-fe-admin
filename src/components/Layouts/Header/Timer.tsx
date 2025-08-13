@@ -1,4 +1,4 @@
-import { Group, Text } from '@mantine/core';
+import { Box, Group, Text } from '@mantine/core';
 import { useInterval } from '@mantine/hooks';
 import dayjs from 'dayjs';
 import { useState } from 'react';
@@ -16,7 +16,7 @@ export default function Timer(props: ITimerProps) {
   });
 
   return (
-    <Group ta="right">
+    <Box ta="right">
       <Group gap={2} align="flex-end">
         <Text component="span" fz={19} fw={500}>
           {time.get('hour').toString().padStart(2, '0')}
@@ -37,6 +37,6 @@ export default function Timer(props: ITimerProps) {
       <Text fz={14} c={theme?.colors.GRAY} lh={1}>
         {time.format(DATE_FORMAT)}
       </Text>
-    </Group>
+    </Box>
   );
 }

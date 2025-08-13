@@ -4,7 +4,7 @@ import styled from 'styled-components';
 export const AccordionWrapper = createPolymorphicComponent<'div', BoxProps>(styled(Box)`
   padding: 1.6rem;
   box-shadow: ${(props) => props.theme.shadows.SHADOW_TABLE};
-  border-radius: ${(props) => props.theme.radius.SM};
+  border-radius: 12px;
   background: ${(props) => props.theme.colors.BACKGROUND_PRIMARY};
 
   .nvt-Accordion-item {

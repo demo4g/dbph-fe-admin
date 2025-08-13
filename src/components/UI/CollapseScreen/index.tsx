@@ -10,7 +10,12 @@ interface ICollapseScreen {
   initActive?: boolean;
 }
 
-const CollapseScreen = ({ children, header, headerContent, initActive }: ICollapseScreen) => {
+const CollapseScreen = ({
+  children,
+  header,
+  headerContent,
+  initActive = true,
+}: ICollapseScreen) => {
   const [activeKey, setActiveKey] = useState(initActive ? '1' : '');
 
   const defaultHeader = (

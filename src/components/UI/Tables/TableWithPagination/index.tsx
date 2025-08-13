@@ -48,10 +48,11 @@ export default function TableWithPagination({
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(pagination?.pageSize || 1);
 
-  const startIndex = useMemo(() => (pageIndex - 1) * pageSize, [pageIndex, pageSize]);
+  const startIndex = useMemo(() => pageIndex * pageSize, [pageIndex, pageSize]);
   const lastIndex = useMemo(() => {
-    return Math.min(startIndex + pageSize, totalRecords);
-  }, [startIndex, pageSize, totalRecords]);
+    if (data.length === 0) return startIndex + pageSize;
+    return startIndex + data.length;
+  }, [startIndex, data.length, pageSize]);
   const message = `Hiển thị ${startIndex + 1} - ${lastIndex} của ${totalRecords}`;
 
   const pageSizeList = [

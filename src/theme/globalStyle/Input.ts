@@ -11,7 +11,7 @@ export const InputOveride = css`
   }
 
   .nvt-InputWrapper-label {
-    // font-size: 1.6rem;
+    font-size: 1.6rem;
     font-weight: 400;
     white-space: nowrap;
     padding-left: 1.2rem;

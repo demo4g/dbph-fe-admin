@@ -158,3 +158,25 @@ export const parseDateRange = (
 
   return [fromDate, toDate];
 };
+
+/**
+ * @description Chuyển đổi số thành định dạng byte
+ * @param {number} bytes - Số byte cần chuyển đổi
+ * @param {number} [decimals=2] - Số chữ số thập phân muốn hiển thị
+ * @example numberToBytes(100000) => "97.66 KB"
+ */
+export const numberToBytes = (bytes?: number, decimals = 2): string => {
+  if (!bytes || !+bytes) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  const fileSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+  if (!fileSize) return '__';
+
+  return `${fileSize} ${sizes[i]}`;
+};

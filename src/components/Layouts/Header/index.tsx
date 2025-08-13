@@ -1,4 +1,13 @@
-import { Group, Image, Loader, LoadingOverlay, Stack, Text, UnstyledButton } from '@mantine/core';
+import {
+  Divider,
+  Group,
+  Image,
+  Loader,
+  LoadingOverlay,
+  Stack,
+  Text,
+  UnstyledButton,
+} from '@mantine/core';
 import { useLogger } from '@mantine/hooks';
 import { modals } from '@mantine/modals';
 import { IoLogOutOutline } from 'react-icons/io5';
@@ -45,6 +54,12 @@ export default function Header(props: IHeaderProps) {
 
         <Group>
           <Timer />
+
+          <Divider orientation="vertical" />
+
+          <Text fw={500} fz={22}>
+            {user?.username}
+          </Text>
 
           <UnstyledButton
             display="flex"

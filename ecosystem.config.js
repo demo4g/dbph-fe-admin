@@ -1,9 +1,9 @@
 module.exports = {
   apps: [
     {
-      name: 'MARKET_MANAGEMENT_300',
+      name: 'DBPH-FE-ADMIN',
       script: './server.js',
-      env: { PORT: 3000 },
+      env: { PORT: 4000 },
     },
   ],
 };

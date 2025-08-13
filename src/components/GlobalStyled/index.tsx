@@ -32,8 +32,8 @@ export const TableHeader = createPolymorphicComponent<'div', BoxProps>(styled(Bo
   height: 6.8rem;
   background-color: ${(props) => props.theme.colors.BACKGROUND_PRIMARY};
 
-  border-top-left-radius: ${(props) => props.theme.radius.SM};
-  border-top-right-radius: ${(props) => props.theme.radius.SM};
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   background-color: ${(props) => props.theme.colors.WHITE};
   box-shadow: ${(props) => props.theme.shadows.SHADOW_TABLE};
   overflow: hidden;
