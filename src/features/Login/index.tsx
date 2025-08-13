@@ -1,5 +1,14 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, LoadingOverlay, PasswordInput, Stack, Text, TextInput } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Image,
+  LoadingOverlay,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { MESSAGES, PATHS } from '~/constants';
@@ -8,6 +17,7 @@ import tokenManager from '~/utils/tokenManager';
 import { ILoginPayload, useLogin } from './services';
 import { LoginContentWrapper, LoginWrapper } from './styled';
 import { Helmet } from 'react-helmet';
+import logo from '~/assets/images/logo.png';
 
 export interface ILoginProps {}
 
@@ -59,6 +69,8 @@ export default function Login(props: ILoginProps) {
           <Box w={400} pos="relative">
             <Stack component="form" onSubmit={handleSubmit(handleLogin)} py={24} px={16}>
               <LoadingOverlay visible={false} />
+
+              <Image src={logo} w={240} mx="auto" />
 
               <Box>
                 <Text ta="center" fw={500} fz={20} mb={8}>

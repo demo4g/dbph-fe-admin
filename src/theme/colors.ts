@@ -12,10 +12,10 @@ export const GRAY = '#919499';
 
 export const BACKGROUND_PRIMARY = '#ffffff';
 export const BACKGROUND_SECONDARY = '#fafafa';
-
-export const PRIMARY = '#268CF3';
 export const TEXT_PRIMARY = BLACK;
 export const TEXT_DISABLED = '#adb5bd';
-export const HOVER_PRIMARY = '#ecf4fd';
+
+export const PRIMARY = '#d3353d';
+export const HOVER_PRIMARY = 'rgba(211, 53, 61, 0.12)';
 export const BORDER_PRIMARY = '#DDDFE4';
-export const INPUT_DISABLED_BG = '#f1f3f5';
+export const INPUT_DISABLED_BG = '#282828ff';

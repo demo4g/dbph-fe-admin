@@ -24,15 +24,6 @@ export const sidebarData = [
   {
     // Quản lý đơn vị hành chính
     title: SIDEBAR_NAME.ADMINISTRATIVE_MANAGEMENT,
-    children: [
-      {
-        title: SIDEBAR_NAME.PROVINCE_MANAGEMENT,
-        path: PATHS.PROVINCE_MANAGEMENT,
-      },
-      {
-        title: SIDEBAR_NAME.WARD_MANAGEMENT,
-        path: PATHS.WARD_MANAGEMENT,
-      },
-    ],
+    path: PATHS.ADMINISTRATIVE_MANAGEMENT,
   },
 ];

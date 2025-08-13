@@ -4,7 +4,7 @@ import { modals } from '@mantine/modals';
 import { IoLogOutOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { useTheme } from 'styled-components';
-import header_menu_bar from '~/assets/images/header_menu_bar.png';
+import logo from '~/assets/images/logo.png';
 import { PATHS } from '~/constants';
 import { useGetUserInfo, useLogout } from '~/services';
 import { Wrapper } from './styled';
@@ -36,10 +36,10 @@ export default function Header(props: IHeaderProps) {
       <Wrapper>
         <Group gap={10}>
           <Link to={PATHS.HOME}>
-            <Image src={header_menu_bar} w={32} h={32} />
+            <Image src={logo} h={40} />
           </Link>
-          <Text size="headline-small" c={theme?.colors.GRAY} tt="uppercase">
-            {/* Hệ thống quản lý cửa hàng */}
+          <Text fz={23} c={theme?.colors.GRAY} tt="uppercase">
+            Hệ thống quản trị báo cáo
           </Text>
         </Group>
 

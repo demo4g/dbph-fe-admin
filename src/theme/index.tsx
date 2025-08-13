@@ -37,6 +37,7 @@ export const mantineTheme = createTheme({
   scale: 1.6,
   defaultRadius: 12,
   fontFamily: "'SVN-Poppins', sans-serif",
+  primaryColor: 'primary',
   breakpoints: {
     xs: BREAKPOINTS.XS,
     sm: BREAKPOINTS.SM,
@@ -44,6 +45,20 @@ export const mantineTheme = createTheme({
     lg: BREAKPOINTS.LG,
     XL: BREAKPOINTS.XL,
     XXL: BREAKPOINTS.XXL,
+  },
+  colors: {
+    primary: [
+      '#ffebed',
+      '#fad7d9',
+      '#eeadb0',
+      '#e38085',
+      '#da5a60',
+      '#d54249',
+      '#d3353d',
+      '#bb272f',
+      '#a82029',
+      '#941521',
+    ],
   },
   cursorType: 'pointer',
   components: {

@@ -9,14 +9,12 @@ import { resetCss } from './reset';
 import { responsive } from './response';
 import { SelectOveride } from './Select';
 import { TabsOveride } from './Tabs';
-import { TextOveride } from './Text';
 
 export const GlobalStyle = createGlobalStyle`
   
   ${resetCss}
   ${responsive}
   ${MantineReactTableOveride}
-  ${TextOveride}
   ${AccordionOveride}
   ${InputOveride}
   ${DatePickerInputOveride}
