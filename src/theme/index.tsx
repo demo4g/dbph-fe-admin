@@ -26,6 +26,7 @@ import { MantineTable } from './components/Table';
 import { MantineTextarea } from './components/Textarea';
 import { MantineTextInput } from './components/TextInput';
 import { MantineTooltip } from './components/Tooltip';
+import { MantineYearPickerInput } from './components/YearPickerInput';
 import './font/index.scss';
 import * as SHADOWS from './shadows';
 import * as SIZES from './sizes';
@@ -81,5 +82,6 @@ export const mantineTheme = createTheme({
     NumberInput: MantineNumberInput,
     FileInput: MantineFileInput,
     Loader: MantineLoader,
+    YearPickerInput: MantineYearPickerInput,
   },
 });

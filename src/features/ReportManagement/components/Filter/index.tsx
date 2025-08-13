@@ -82,8 +82,6 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
         render={({ field }) => (
           <YearPickerInput
             flex={1}
-            size="md"
-            clearable={true}
             label="Năm"
             placeholder="Chọn năm"
             value={field.value ? dayjs(field.value, YEAR_FORMAT).toDate() : null}

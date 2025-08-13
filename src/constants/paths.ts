@@ -6,4 +6,5 @@ export const DASHBOARD = 'dashboard';
 export const REPORT_MANAGEMENT = 'quan-ly-bao-cao';
 export const TRANSACTION_MANAGEMENT = 'quan-ly-giao-dich';
 export const USER_MANAGEMENT = 'quan-ly-nguoi-dung';
-export const ADMINISTRATIVE_MANAGEMENT = 'quan-ly-don-vi-hanh-chinh';
+export const PROVINCE_MANAGEMENT = 'quan-ly-tinh-thanh-pho';
+export const WARD_MANAGEMENT = 'quan-ly-phuong-xa';

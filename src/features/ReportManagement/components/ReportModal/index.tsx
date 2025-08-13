@@ -283,7 +283,6 @@ export default function ReportManagementModal({
               render={({ field, fieldState }) => (
                 <YearPickerInput
                   required
-                  size="md"
                   clearable={false}
                   label="Năm"
                   placeholder="Chọn năm"

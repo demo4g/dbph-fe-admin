@@ -24,6 +24,17 @@ export const sidebarData = [
   {
     // Quản lý đơn vị hành chính
     title: SIDEBAR_NAME.ADMINISTRATIVE_MANAGEMENT,
-    path: PATHS.ADMINISTRATIVE_MANAGEMENT,
+    children: [
+      {
+        // Quản lý Tỉnh/Thành phố
+        title: SIDEBAR_NAME.PROVINCE_MANAGEMENT,
+        path: PATHS.PROVINCE_MANAGEMENT,
+      },
+      {
+        // Quản lý Phường/Xã
+        title: SIDEBAR_NAME.WARD_MANAGEMENT,
+        path: PATHS.WARD_MANAGEMENT,
+      },
+    ],
   },
 ];

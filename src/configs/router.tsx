@@ -7,10 +7,11 @@ import NotFound404 from '~/features/404';
 
 const Login = lazy(() => import('~/features/Login'));
 const Dashboard = lazy(() => import('~/features/Dashboard'));
-const AdministrativeManagement = lazy(() => import('~/features/AdministrativeManagement'));
 const UserManagement = lazy(() => import('~/features/UserManagement'));
 const TransactionManagement = lazy(() => import('~/features/TransactionManagement'));
 const ReportManagement = lazy(() => import('~/features/ReportManagement'));
+const ProvinceManagement = lazy(() => import('~/features/ProvinceManagement'));
+const WardManagement = lazy(() => import('~/features/WardManagement'));
 
 const router = createBrowserRouter([
   {
@@ -27,10 +28,6 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
-        path: PATHS.ADMINISTRATIVE_MANAGEMENT,
-        element: <AdministrativeManagement />,
-      },
-      {
         path: PATHS.USER_MANAGEMENT,
         element: <UserManagement />,
       },
@@ -41,6 +38,14 @@ const router = createBrowserRouter([
       {
         path: PATHS.REPORT_MANAGEMENT,
         element: <ReportManagement />,
+      },
+      {
+        path: PATHS.PROVINCE_MANAGEMENT,
+        element: <ProvinceManagement />,
+      },
+      {
+        path: PATHS.WARD_MANAGEMENT,
+        element: <WardManagement />,
       },
     ],
   },
