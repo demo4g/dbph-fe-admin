@@ -49,7 +49,6 @@ export default function ProvinceManagement(props: IProvinceManagementProps) {
   ];
 
   const data = Array.from({ length: 33 }, (_, index) => ({
-    id: index + 1,
     code: `P${index + 1}`,
     name: `Province ${index + 1}`,
     priority: index + 1,
@@ -104,7 +103,7 @@ export default function ProvinceManagement(props: IProvinceManagementProps) {
         <Table>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>STT</Table.Th>
+              <Table.Th>#</Table.Th>
               <Table.Th>Mã Tỉnh/thành phố</Table.Th>
               <Table.Th>Tên Tỉnh/thành phố</Table.Th>
               <Table.Th>Thứ tự ưu tiên</Table.Th>
@@ -113,7 +112,7 @@ export default function ProvinceManagement(props: IProvinceManagementProps) {
           </Table.Thead>
           <Table.Tbody>
             {remainingData?.map((e, index) => (
-              <Table.Tr key={e.id}>
+              <Table.Tr key={e.code}>
                 <Table.Td>{index + 1}</Table.Td>
                 <Table.Td>{e.code}</Table.Td>
                 <Table.Td>{e.name}</Table.Td>
