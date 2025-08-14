@@ -1,8 +1,10 @@
 import { Button, Group, Select, TextInput } from '@mantine/core';
 import { YearPickerInput } from '@mantine/dates';
 import dayjs from 'dayjs';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { YEAR_FORMAT } from '~/constants';
+import { useGetProvinceList } from '~/features/ProvinceManagement/services';
+import { useGetWardList } from '~/features/WardManagement/services';
 import { trimObject } from '~/utils';
 import { IReportFilter } from '../../services';
 
@@ -18,10 +20,20 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
     defaultValues,
   });
 
+  const provinceId = useWatch({ control, name: 'province' });
+
   const handleClear = () => {
     reset(defaultValues);
     onClear();
   };
+
+  // Danh sách tỉnh/thành
+  const { data: provinceList = [] } = useGetProvinceList();
+
+  // Danh sách tỉnh/thành
+  const { data: wardList = [] } = useGetWardList({
+    params: provinceId,
+  });
 
   return (
     <Group component="form" onSubmit={handleSubmit((values) => onFilter(trimObject(values)))}>
@@ -44,16 +56,16 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
         name="province"
         render={({ field, fieldState }) => (
           <Select
-            {...field}
             flex={1}
             label="Tỉnh/Thành phố"
             placeholder="Chọn tỉnh/thành phố"
             error={fieldState.error?.message}
             value={field.value || null}
-            data={[
-              { label: 'Tỉnh/Thành phố 1', value: '1' },
-              { label: 'Tỉnh/Thành phố 2', value: '2' },
-            ]}
+            data={provinceList?.map((e) => ({ label: e.name, value: e._id }))}
+            onChange={(e) => {
+              setValue('province', e || undefined);
+              setValue('ward', undefined);
+            }}
           />
         )}
       />
@@ -68,10 +80,7 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
             label="Phường/Xã"
             placeholder="Chọn phường/xã"
             value={field.value || null}
-            data={[
-              { label: 'Phường/Xã 1', value: '1' },
-              { label: 'Phường/Xã 2', value: '2' },
-            ]}
+            data={wardList?.map((e) => ({ label: e.name, value: e._id }))}
           />
         )}
       />

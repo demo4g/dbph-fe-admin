@@ -34,7 +34,7 @@ const handleResponseSuccess = (response: AxiosResponse) => {
   }
 
   //Hiển thị thông báo lỗi
-  if (errorCode !== EApiStatusCode.SUCCESS && response?.data?.status === false) {
+  if (errorCode !== EApiStatusCode.SUCCESS) {
     notifications.show({
       title: response?.data?.message || 'Đã có lỗi xảy ra!',
       message: '',

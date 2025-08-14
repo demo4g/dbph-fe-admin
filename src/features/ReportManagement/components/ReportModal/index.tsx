@@ -17,11 +17,13 @@ import {
 import { YearPickerInput } from '@mantine/dates';
 import dayjs from 'dayjs';
 import { ChangeEvent, useRef, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import * as Yup from 'yup';
 import BaseModal, { IBaseModalProps } from '~/components/UI/BaseModal';
 import FancyboxImage from '~/components/UI/FancyboxImage';
 import { MESSAGES, YEAR_FORMAT } from '~/constants';
+import { useGetProvinceList } from '~/features/ProvinceManagement/services';
+import { useGetWardList } from '~/features/WardManagement/services';
 import { useUploadFile } from '~/services';
 import { utils } from '~/utils';
 import { validateFileSize } from '~/utils/validate';
@@ -45,8 +47,6 @@ export default function ReportManagementModal({
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const [fileInfo, setFileInfo] = useState<{ name: string; size: number }>();
-
-  const { mutate: uploadFile, isLoading: uploadLoading } = useUploadFile();
 
   const defaultValues: Partial<IReportDetail> = {
     image: '',
@@ -80,6 +80,18 @@ export default function ReportManagementModal({
     defaultValues,
     resolver: yupResolver(validationSchema) as any,
   });
+
+  const provinceId = useWatch({ control, name: 'province' });
+
+  // Danh sách tỉnh/thành
+  const { data: provinceList = [] } = useGetProvinceList();
+
+  // Danh sách tỉnh/thành
+  const { data: wardList = [] } = useGetWardList({
+    params: provinceId,
+  });
+
+  const { mutate: uploadFile, isLoading: uploadLoading } = useUploadFile();
 
   const handleUploadImage = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
@@ -237,10 +249,7 @@ export default function ReportManagementModal({
                   placeholder="Chọn tỉnh/thành phố"
                   error={fieldState.error?.message}
                   value={field.value || null}
-                  data={[
-                    { label: 'Tỉnh/Thành phố 1', value: '1' },
-                    { label: 'Tỉnh/Thành phố 2', value: '2' },
-                  ]}
+                  data={provinceList?.map((e) => ({ label: e.name, value: e._id }))}
                 />
               )}
             />
@@ -254,10 +263,7 @@ export default function ReportManagementModal({
                   label="Phường/Xã"
                   placeholder="Chọn phường/xã"
                   value={field.value || null}
-                  data={[
-                    { label: 'Phường/Xã 1', value: '1' },
-                    { label: 'Phường/Xã 2', value: '2' },
-                  ]}
+                  data={wardList?.map((e) => ({ label: e.name, value: e._id }))}
                 />
               )}
             />

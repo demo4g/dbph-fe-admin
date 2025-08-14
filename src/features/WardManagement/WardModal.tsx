@@ -6,10 +6,12 @@ import * as Yup from 'yup';
 import BaseModal, { IBaseModalProps } from '~/components/UI/BaseModal';
 import { MESSAGES } from '~/constants';
 import { utils } from '~/utils';
+import { useGetProvinceList } from '../ProvinceManagement/services';
 import { IWard } from './services';
 
 export interface IWardModalProps extends IBaseModalProps {
   initialValues?: IWard;
+  provinceId?: string;
   onSubmit: (values: any, callback?: Function) => void;
 }
 
@@ -17,25 +19,34 @@ export default function WardModal({
   initialValues,
   readOnly,
   confirmLoading,
+  provinceId,
   onClose,
   onSubmit,
   ...props
 }: IWardModalProps) {
   const isUpdate = !!initialValues;
 
-  const defaultValues: Partial<IWard> = {
-    provinceCode: '',
+  // Danh sách tỉnh/thành
+  const { data: provinceList = [] } = useGetProvinceList();
+
+  const defaultValues = {
+    parent_id: '',
     code: '',
     name: '',
     priority: undefined,
-    status: true,
+    is_enable: true,
+    version: 2,
   };
 
   const validationSchema = Yup.object({
-    code: Yup.string().required(MESSAGES.REQUIRED),
-    name: Yup.string().required(MESSAGES.REQUIRED),
+    parent_id: Yup.string().required(MESSAGES.REQUIRED),
+    code: Yup.string()
+      .max(10, 'Mã Phường/Xã không được vượt quá 10 ký tự')
+      .required(MESSAGES.REQUIRED),
+    name: Yup.string()
+      .max(50, 'Tên Phường/Xã không được vượt quá 50 ký tự')
+      .required(MESSAGES.REQUIRED),
     priority: Yup.number().transform(utils.common.transformInputNumber),
-    status: Yup.boolean(),
   });
 
   const {
@@ -50,13 +61,23 @@ export default function WardModal({
     resolver: yupResolver(validationSchema) as any,
   });
 
+  // Set mặc định provinceCode nếu ko có initialValues
+  useEffect(() => {
+    if (initialValues || !provinceId) return;
+    setValue('parent_id', provinceId);
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues, provinceId, props.opened]);
+
   useEffect(() => {
     if (!initialValues) return;
-    const fields: (keyof IWard)[] = ['provinceCode', 'code', 'name', 'priority', 'status'];
+    const fields: (keyof IWard)[] = ['code', 'name', 'priority', 'is_enable'];
 
     for (const field of fields) {
-      setValue(field, initialValues[field]);
+      setValue(field as any, initialValues[field]);
     }
+
+    setValue('parent_id', initialValues.parent._id);
+
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
 
@@ -90,18 +111,16 @@ export default function WardModal({
       <Stack>
         <Controller
           control={control}
-          name="provinceCode"
+          name="parent_id"
           render={({ field }) => (
             <Select
               {...field}
               disabled
+              required
               label="Tỉnh/Thành phố"
               placeholder="Chọn Tỉnh/Thành phố"
               value={field.value || null}
-              data={[
-                { label: 'Tỉnh/Thành phố 1', value: '1' },
-                { label: 'Tỉnh/Thành phố 2', value: '2' },
-              ]}
+              data={provinceList?.map((e) => ({ label: e.name, value: e._id }))}
             />
           )}
         />
@@ -139,13 +158,13 @@ export default function WardModal({
         {isUpdate && (
           <Controller
             control={control}
-            name="status"
+            name="is_enable"
             render={({ field }) => (
               <Switch
                 styles={{ body: { flexDirection: 'row-reverse', gap: 12 } }}
                 label="Trạng thái"
                 checked={field.value}
-                onChange={(e) => setValue('status', e.target.checked)}
+                onChange={(e) => setValue('is_enable', e.target.checked)}
               />
             )}
           />

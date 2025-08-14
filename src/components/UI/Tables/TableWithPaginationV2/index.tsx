@@ -159,7 +159,7 @@ export default function TableWithPaginationV2({
 
           <Select
             w={140}
-            defaultValue={_pagination.pageSize.toString()}
+            value={_pagination.pageSize.toString()}
             onChange={(e) => Number(e) && setPagination({ pageIndex: 0, pageSize: Number(e) })}
             data={pageSizeList}
             clearable={false}

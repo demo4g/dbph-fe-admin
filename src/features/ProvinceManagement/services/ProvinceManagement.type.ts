@@ -1,6 +1,8 @@
 export interface IProvince {
+  _id: string;
   code: string;
   name: string;
   priority: number;
-  status: boolean;
+  is_enable: boolean;
+  version: number;
 }

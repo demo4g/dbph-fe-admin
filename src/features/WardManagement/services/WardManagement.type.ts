@@ -1,7 +1,11 @@
+import { IProvince } from '~/features/ProvinceManagement/services';
+
 export interface IWard {
-  provinceCode: string;
+  _id: string;
   code: string;
   name: string;
   priority: number;
-  status: boolean;
+  version: number;
+  is_enable: boolean;
+  parent: IProvince;
 }
