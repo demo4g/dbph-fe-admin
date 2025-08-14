@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { IBaseFilter } from '~/types';
 
+/** Dùng cho app Quản trị Game */
 const useFilter = <T extends IBaseFilter = IBaseFilter>(initialFilter: T) => {
   const [filter, setFilter] = useState<T>(initialFilter);
 
@@ -8,7 +9,11 @@ const useFilter = <T extends IBaseFilter = IBaseFilter>(initialFilter: T) => {
     setFilter(initialFilter);
   }, [initialFilter]);
 
-  const handleFilter = (values: Partial<T>) => {
+  const handleFilter = (values: any) => {
+    setFilter((prevState) => ({ ...initialFilter, limit: prevState.limit, filter: { ...values } }));
+  };
+
+  const handleFilterV2 = (values: any) => {
     setFilter((prevState) => ({ ...initialFilter, limit: prevState.limit, ...values }));
   };
 
@@ -29,7 +34,7 @@ const useFilter = <T extends IBaseFilter = IBaseFilter>(initialFilter: T) => {
     },
   });
 
-  return { filter, setFilter, handleClearFilter, handleFilter, pagination };
+  return { filter, setFilter, handleClearFilter, handleFilter, handleFilterV2, pagination };
 };
 
 export default useFilter;

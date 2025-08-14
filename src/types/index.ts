@@ -3,7 +3,7 @@ import { EApiStatusCode } from '~/services';
 
 export interface IPagination<T> {
   data: T[];
-  total: number;
+  totalItems: number;
   totalPages: number;
   currentPage: number;
 }

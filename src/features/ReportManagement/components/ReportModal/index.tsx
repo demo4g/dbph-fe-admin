@@ -315,9 +315,7 @@ export default function ReportManagementModal({
                     {...field}
                     label={
                       <Group gap={4}>
-                        <Text>
-                          Phường/Xã <span style={{ color: 'red' }}>*</span>
-                        </Text>
+                        <Text>Phường/Xã</Text>
                         <UnstyledButton
                           display="flex"
                           onClick={() => {
