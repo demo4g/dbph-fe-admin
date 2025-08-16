@@ -1,12 +1,12 @@
 import { Button, Group, Select, TextInput } from '@mantine/core';
 import { YearPickerInput } from '@mantine/dates';
 import dayjs from 'dayjs';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { YEAR_FORMAT } from '~/constants';
 import { useGetProvinceList } from '~/features/ProvinceManagement/services';
-import { useGetWardList } from '~/features/WardManagement/services';
 import { trimObject } from '~/utils';
 import { IReportFilter } from '../../services';
+import { EREPORT_STATUS } from '../../services/ReportManagement.enum';
 
 export interface IFilterProps {
   onFilter: (value: any) => void;
@@ -20,7 +20,7 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
     defaultValues,
   });
 
-  const provinceId = useWatch({ control, name: 'province' });
+  // const provinceId = useWatch({ control, name: 'province' });
 
   const handleClear = () => {
     reset(defaultValues);
@@ -30,16 +30,16 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
   // Danh sách tỉnh/thành
   const { data: provinceList = [] } = useGetProvinceList();
 
-  // Danh sách tỉnh/thành
-  const { data: wardList = [] } = useGetWardList({
-    params: provinceId,
-  });
+  // // Danh sách tỉnh/thành
+  // const { data: wardList = [] } = useGetWardList({
+  //   params: provinceId,
+  // });
 
   return (
     <Group component="form" onSubmit={handleSubmit((values) => onFilter(trimObject(values)))}>
       <Controller
         control={control}
-        name="keyword"
+        name="search"
         render={({ field }) => (
           <TextInput
             {...field}
@@ -70,7 +70,7 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
         )}
       />
 
-      <Controller
+      {/* <Controller
         control={control}
         name="ward"
         render={({ field }) => (
@@ -83,7 +83,7 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
             data={wardList?.map((e) => ({ label: e.name, value: e._id }))}
           />
         )}
-      />
+      /> */}
 
       <Controller
         control={control}
@@ -93,9 +93,9 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
             flex={1}
             label="Năm"
             placeholder="Chọn năm"
-            value={field.value ? dayjs(field.value, YEAR_FORMAT).toDate() : null}
+            value={field.value ? dayjs(field.value.toString(), YEAR_FORMAT).toDate() : null}
             onChange={(date) =>
-              setValue('year', date ? dayjs(date).format(YEAR_FORMAT) : undefined)
+              setValue('year', date ? +dayjs(date).format(YEAR_FORMAT) : undefined)
             }
           />
         )}
@@ -112,8 +112,8 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
             placeholder="Chọn trạng thái"
             value={field.value || null}
             data={[
-              { label: 'Trạng thái 1', value: '1' },
-              { label: 'Trạng thái 2', value: '2' },
+              { label: 'Hoạt động', value: EREPORT_STATUS.ENABLED },
+              { label: 'Ngừng hoạt động', value: EREPORT_STATUS.DISABLED },
             ]}
           />
         )}

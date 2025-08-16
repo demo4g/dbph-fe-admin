@@ -10,11 +10,11 @@ const useFilter = <T extends IBaseFilter = IBaseFilter>(initialFilter: T) => {
   }, [initialFilter]);
 
   const handleFilter = (values: any) => {
-    setFilter((prevState) => ({ ...initialFilter, limit: prevState.limit, filter: { ...values } }));
+    setFilter((prevState) => ({ ...initialFilter, limit: prevState.limit, ...values }));
   };
 
   const handleFilterV2 = (values: any) => {
-    setFilter((prevState) => ({ ...initialFilter, limit: prevState.limit, ...values }));
+    setFilter((prevState) => ({ ...initialFilter, limit: prevState.limit, filter: { ...values } }));
   };
 
   const handleClearFilter = () => {

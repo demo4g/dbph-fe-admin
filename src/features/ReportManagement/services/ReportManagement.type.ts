@@ -1,23 +1,36 @@
-export interface IReportFilter {
-  keyword?: string;
-  year?: string;
-  status?: string;
+import { IBaseFilter } from '~/types';
+import { EREPORT_STATUS } from './ReportManagement.enum';
+
+export interface IReportFilter extends IBaseFilter {
+  search?: string;
+  year?: number;
+  status?: EREPORT_STATUS;
   province?: string;
   ward?: string;
 }
 
 export interface IReportItem {
-  code: string;
+  _id: string;
   name: string;
-  image?: string;
+  code: string;
+  province: string;
   year: number;
-  price?: number;
-  status: boolean;
+  price: number;
+  file_size: number;
+  status: EREPORT_STATUS;
+  created_at: string;
+  ward: string;
 }
 
 export interface IReportDetail extends IReportItem {
-  file: any;
-  province: string;
-  ward?: string;
-  description?: string;
+  file: string;
+  description: string;
+  thumbnail: string;
+  download_count: number;
+}
+
+export interface IReportFileUpload {
+  chunkIndex: number;
+  fileChunk: Blob;
+  fileName: string;
 }

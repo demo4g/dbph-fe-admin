@@ -1,0 +1,4 @@
+export enum EREPORT_STATUS {
+  ENABLED = 'ENABLED',
+  DISABLED = 'DISABLED',
+}

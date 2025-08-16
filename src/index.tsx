@@ -10,6 +10,7 @@ import queryClient from './configs/react-query';
 import reportWebVitals from './reportWebVitals';
 import { BREAKPOINTS, COLORS, SHADOWS, SIZES } from './theme';
 import MaintineThemeProvider from './theme/provider';
+import { RecoilRoot } from 'recoil';
 
 dayjs.locale('vi');
 dayjs.extend(customParseFormat);
@@ -27,7 +28,9 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <ThemeProvider theme={theme}>
       <MaintineThemeProvider>
-        <App />
+        <RecoilRoot>
+          <App />
+        </RecoilRoot>
       </MaintineThemeProvider>
     </ThemeProvider>
     <ReactQueryDevtools initialIsOpen={false} />

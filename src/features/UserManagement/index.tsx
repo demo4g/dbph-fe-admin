@@ -22,7 +22,7 @@ export interface IUserManagementProps {}
  * @createdAt 12/08/2025
  */
 export default function UserManagement(props: IUserManagementProps) {
-  const { filter, pagination, handleClearFilter, handleFilter } = useFilter(initialFilter);
+  const { filter, pagination, handleClearFilter, handleFilterV2 } = useFilter(initialFilter);
 
   const { data: { data = [], totalItems } = {}, isLoading } = useGetUserFilter({
     params: filter,
@@ -35,7 +35,7 @@ export default function UserManagement(props: IUserManagementProps) {
       </Helmet>
 
       <CollapseScreen
-        headerContent={<Filter onFilter={handleFilter} onClear={handleClearFilter} />}
+        headerContent={<Filter onFilter={handleFilterV2} onClear={handleClearFilter} />}
       >
         {(activeKey: string | null) => (
           <DataTable

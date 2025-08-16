@@ -34,7 +34,7 @@ export default function Filter({ onClear, onFilter }: IFilterProps) {
             {...field}
             flex={1}
             label="Tìm kiếm"
-            placeholder="SĐT, Email"
+            placeholder="Số điện thoại, Email"
             value={field.value || ''}
           />
         )}

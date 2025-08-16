@@ -9,7 +9,7 @@ export interface IMaintineThemeProviderProps extends React.PropsWithChildren {}
 
 export default function MaintineThemeProvider({ children }: IMaintineThemeProviderProps) {
   return (
-    <MantineProvider theme={mantineTheme} classNamesPrefix="nvt" defaultColorScheme="light">
+    <MantineProvider theme={mantineTheme} classNamesPrefix="nvt">
       <ModalsProvider modalProps={{ size: 440 }} labels={{ confirm: 'Xác nhận', cancel: 'Hủy' }}>
         <DatesProvider settings={{ locale: 'vi-VN' }}>{children}</DatesProvider>
       </ModalsProvider>

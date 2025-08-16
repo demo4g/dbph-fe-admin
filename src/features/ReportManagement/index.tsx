@@ -5,6 +5,7 @@ import { DEFAULT_PAGESIZE } from '~/constants';
 import useFilter from '~/hooks/useFilter';
 import DataTable from './components/DataTable';
 import Filter from './components/Filter';
+import { useGetReportFilter } from './services';
 
 const initialFilter = {
   page: 1,
@@ -21,15 +22,15 @@ export interface IReportManagementProps {}
 export default function ReportManagement(props: IReportManagementProps) {
   const { filter, pagination, handleClearFilter, handleFilter } = useFilter(initialFilter);
 
-  useLogger('filter', [filter]);
+  const {
+    data: { data = [], totalItems } = {},
+    isLoading,
+    refetch,
+  } = useGetReportFilter({
+    params: filter,
+  });
 
-  const data: any = Array.from({ length: 10 }, (_, i) => ({
-    name: `Báo cáo ${i + 1}`,
-    code: `${i + 1}`,
-    year: '2025',
-    price: Math.floor(Math.random() * 1000000) + 1000000,
-    status: '1',
-  }));
+  useLogger('filter', [filter]);
 
   return (
     <>
@@ -42,11 +43,11 @@ export default function ReportManagement(props: IReportManagementProps) {
       >
         {(activeKey: string | null) => (
           <DataTable
-            isLoading={false}
+            isLoading={isLoading}
             data={data}
-            pagination={pagination(data.length)}
+            pagination={pagination(totalItems)}
             scrollY={`calc(100vh - ${activeKey ? '37.4rem' : '29.2rem'})`}
-            refetch={() => {}}
+            refetch={refetch}
           />
         )}
       </CollapseScreen>

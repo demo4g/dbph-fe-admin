@@ -33,7 +33,6 @@ import * as SIZES from './sizes';
 
 export { BREAKPOINTS, COLORS, SHADOWS, SIZES };
 
-// https://www.figma.com/design/NwbadBqrYpRxJGa854XCJw/Vihub---23.04.2024?node-id=0-1&t=6TspHzcQfzpojuKf-0
 export const mantineTheme = createTheme({
   scale: 1.6,
   defaultRadius: 12,

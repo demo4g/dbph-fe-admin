@@ -212,9 +212,7 @@ export default function WardManagement(props: IWardManagementProps) {
             placeholder="Chọn Tỉnh/Thành phố"
             data={provinceList.map((e) => ({ label: e.name, value: e._id }))}
             value={filter.parent_id}
-            onChange={(e) => {
-              handleFilter({ parent_id: e || undefined });
-            }}
+            onChange={(e) => handleFilter({ parent_id: e || undefined })}
           />
 
           <Input

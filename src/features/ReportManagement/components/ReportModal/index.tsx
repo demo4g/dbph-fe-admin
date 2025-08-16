@@ -17,58 +17,69 @@ import {
 } from '@mantine/core';
 import { YearPickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
+import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
 import dayjs from 'dayjs';
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { IoIosAddCircleOutline } from 'react-icons/io';
+import { useSetRecoilState } from 'recoil';
 import { useTheme } from 'styled-components';
 import * as Yup from 'yup';
 import BaseModal, { IBaseModalProps } from '~/components/UI/BaseModal';
 import FancyboxImage from '~/components/UI/FancyboxImage';
-import { MESSAGES, YEAR_FORMAT } from '~/constants';
+import { FILE_MAX_SIZE, MESSAGES, YEAR_FORMAT } from '~/constants';
 import ProvinceModal from '~/features/ProvinceManagement/ProvinceModal';
 import { useCreateProvince, useGetProvinceList } from '~/features/ProvinceManagement/services';
 import { useCreateWard, useGetWardList } from '~/features/WardManagement/services';
 import WardModal from '~/features/WardManagement/WardModal';
 import { useUploadFile } from '~/services';
-import { utils } from '~/utils';
+import { trimObject, utils } from '~/utils';
 import { validateFileSize } from '~/utils/validate';
-import { IReportDetail, IReportItem } from '../../services';
+import { IReportDetail, useGetReportDetail, useUploadFileReport } from '../../services';
+import { EREPORT_STATUS } from '../../services/ReportManagement.enum';
+import { UploadFileReportProgress } from '../../services/ReportManagement.recoil';
+import UploadFileProgress from './UploadFileProgress';
 
 export interface IReportManagementModalProps extends IBaseModalProps {
-  initialValues?: IReportItem;
+  reportId?: IReportDetail['_id'];
   onSubmit: (values: any, callback?: Function) => void;
 }
 
 export default function ReportManagementModal({
-  initialValues,
+  reportId,
   readOnly,
   confirmLoading,
   onClose,
   onSubmit,
   ...props
 }: IReportManagementModalProps) {
-  const isUpdate = !!initialValues;
+  const isUpdate = !!reportId;
   const theme = useTheme();
   const inputImageRef = useRef<HTMLInputElement>(null);
   const inputFileRef = useRef<HTMLInputElement>(null);
+  const setUploadFileReportProgress = useSetRecoilState(UploadFileReportProgress);
 
   const [opened, provinceModal] = useDisclosure();
   const [opened2, wardModal] = useDisclosure();
+  const [isUploading, setIsUploading] = useState(false);
 
-  const [fileInfo, setFileInfo] = useState<{ name: string; size: number }>();
+  const { data: reportDetail, isFetching } = useGetReportDetail({
+    params: reportId,
+    options: { staleTime: 0 },
+  });
 
   const defaultValues: Partial<IReportDetail> = {
-    image: '',
+    thumbnail: '',
     code: '',
     name: '',
     province: '',
     ward: '',
-    file: null,
+    file: '',
+    description: '',
     price: undefined,
     year: new Date().getFullYear(),
-    status: true,
+    status: EREPORT_STATUS.ENABLED,
   };
 
   const validationSchema = Yup.object({
@@ -77,7 +88,7 @@ export default function ReportManagementModal({
     name: Yup.string().required(MESSAGES.REQUIRED),
     price: Yup.number().transform(utils.common.transformInputNumber).required(MESSAGES.REQUIRED),
     year: Yup.number().required(MESSAGES.REQUIRED),
-    file: Yup.mixed().required(MESSAGES.REQUIRED),
+    file: Yup.string().required(MESSAGES.REQUIRED),
   });
 
   const {
@@ -94,6 +105,8 @@ export default function ReportManagementModal({
   });
 
   const provinceId = useWatch({ control, name: 'province' });
+  const file = useWatch({ control, name: 'file' });
+  const fileSize = useWatch({ control, name: 'file_size' });
 
   // Danh sách tỉnh/thành
   const { data: provinceList = [] } = useGetProvinceList();
@@ -104,9 +117,34 @@ export default function ReportManagementModal({
   });
 
   const { mutate: uploadFile, isLoading: uploadLoading } = useUploadFile();
+  const { mutate: uploadFileReport } = useUploadFileReport();
   const { mutate: createProvince, isLoading: createProvinceLoading } = useCreateProvince();
   const { mutate: createWard, isLoading: createWardLoading } = useCreateWard();
 
+  useEffect(() => {
+    if (!reportDetail) return;
+
+    const fields: (keyof IReportDetail)[] = [
+      'code',
+      'name',
+      'province',
+      'ward',
+      'file',
+      'file_size',
+      'description',
+      'price',
+      'year',
+      'status',
+    ];
+
+    fields.forEach((field) => {
+      setValue(field, reportDetail[field]);
+    });
+
+    //eslint-disable-next-line
+  }, [reportDetail]);
+
+  // Tải lên ảnh báo cáo
   const handleUploadImage = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
@@ -117,19 +155,103 @@ export default function ReportManagementModal({
     uploadFile(file, {
       onSuccess: (response) => {
         // Lấy cả url, nhưng khi lưu chỉ cần path
-        setValue('image', response?.data?.uploadedUrl);
+        setValue('thumbnail', response?.data?.uploadedUrl);
         e.target.value = '';
       },
     });
   };
 
-  const handleUploadFile = (e: ChangeEvent<HTMLInputElement>) => {
+  // Tải lên file báo cáo
+  const handleUploadFileReport = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
 
-    console.log('file: ', file);
-    setFileInfo({ name: file.name, size: file.size });
-    setValue('file', file);
+    // Kiểm tra kích thước file
+    if (file.size > FILE_MAX_SIZE) {
+      e.target.value = '';
+      modals.openConfirmModal({
+        size: 500,
+        title: 'Tải lên thất bại',
+        children: (
+          <Text>
+            Kích thước file báo cáo không được vượt quá <b>100MB</b>
+          </Text>
+        ),
+      });
+      return;
+    }
+
+    const lastIndex = file.name.lastIndexOf('.');
+    const hex = new Date().getTime().toString(16);
+
+    // Thêm chuỗi hex vào tên file
+    const fileName = file.name.substring(0, lastIndex) + '-' + hex + file.name.substring(lastIndex);
+
+    // Tách file thành các chunk
+    const chunks = utils.common.splitFileIntoChunks(file);
+
+    // xác định phần trăm tối đa cho mỗi chunk
+    const maxChunkPercent = Math.ceil(100 / chunks.length);
+
+    // clear value của input để khi chọn lại file vẫn kích hoạt onChange
+    e.target.value = '';
+    setIsUploading(true);
+
+    // Tải lên từng chunk
+    for (let i = 0; i < chunks.length; i++) {
+      const payload = {
+        chunkIndex: i,
+        fileChunk: chunks[i],
+        fileName: fileName,
+      };
+
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: function (progressEvent: any) {
+          // % tải lên của mỗi chunk
+          const chunkPercent = Math.ceil(
+            ((i * chunks.length + progressEvent.loaded) * 100) / file.size
+          );
+          // Tổng phần trăm tải lên
+          const totalPercent = maxChunkPercent * i + chunkPercent;
+          setUploadFileReportProgress(totalPercent);
+        },
+      };
+
+      try {
+        // Tải lên lần lượt chunk
+        await new Promise((resolve, reject) => {
+          const body = { config, payload };
+          uploadFileReport(body, {
+            onSuccess: () => {
+              resolve(true);
+
+              // Nếu là chunk cuối cùng kết thúc upload
+              if (i === chunks.length - 1) {
+                setValue('file', fileName);
+                setValue('file_size', file.size);
+                setIsUploading(false);
+                setUploadFileReportProgress(0);
+                notifications.show({ message: 'Tải lên file báo cáo thành công' });
+              }
+            },
+            onError: () => {
+              setIsUploading(false);
+              setUploadFileReportProgress(0);
+              reject();
+              return;
+            },
+          });
+        });
+      } catch {
+        notifications.show({
+          message: 'Tải lên file báo cáo thất bại',
+          color: theme?.colors.RED,
+        });
+      }
+    }
   };
 
   const handleCreateProvince = (values: any, callback?: Function) => {
@@ -137,7 +259,7 @@ export default function ReportManagementModal({
       onSuccess: (response) => {
         callback?.();
         setValue('province', response.data);
-        setValue('ward', undefined); // Reset ward when province changes
+        setValue('ward', ''); // Reset ward when province changes
         notifications.show({ message: 'Thêm Tỉnh/Thành phố thành công' });
       },
     });
@@ -153,9 +275,30 @@ export default function ReportManagementModal({
     });
   };
 
+  const _handleSubmit = handleSubmit((values) => {
+    if (isUploading) {
+      // Không cho phép gửi form khi đang tải lên file
+      notifications.show({
+        message: 'Đang tải lên file báo cáo, vui lòng chờ...',
+        color: theme?.colors.ORANGE,
+      });
+      return;
+    }
+
+    onSubmit(trimObject(values), handleClose);
+  });
+
   const handleClose = () => {
+    // Không đóng modal khi đang tải lên file
+    if (isUploading) {
+      notifications.show({
+        message: 'Đang tải lên file báo cáo, vui lòng chờ...',
+        color: theme?.colors.ORANGE,
+      });
+      return;
+    }
+
     onClose();
-    setFileInfo(undefined);
     reset(defaultValues);
   };
 
@@ -166,11 +309,8 @@ export default function ReportManagementModal({
         Hủy
       </Button>
       {!readOnly && (
-        <Button
-          onClick={handleSubmit((values) => onSubmit(values, handleClose))}
-          loading={confirmLoading}
-        >
-          {isUpdate ? 'Cập nhật' : 'Thêm'}
+        <Button loading={confirmLoading} onClick={_handleSubmit}>
+          {isUpdate ? 'Cập nhật báo cáo' : 'Tạo báo cáo'}
         </Button>
       )}
     </Group>
@@ -196,14 +336,14 @@ export default function ReportManagementModal({
       />
 
       <BaseModal title={title} size={992} onClose={handleClose} footer={footer} {...props}>
-        <LoadingOverlay visible={uploadLoading} />
+        <LoadingOverlay visible={uploadLoading || isFetching} />
 
         <Box style={{ display: 'grid', gridTemplateColumns: '20rem 1fr', gap: 32 }}>
           <Stack>
             <Controller
               control={control}
               name="file"
-              render={({ field, fieldState }) => (
+              render={({ fieldState }) => (
                 <Stack flex={1}>
                   <Input.Wrapper
                     required
@@ -214,14 +354,14 @@ export default function ReportManagementModal({
                     <Stack gap={4}>
                       <Text
                         fz={14}
-                        title={fileInfo?.name || ''}
+                        title={file || ''}
                         lineClamp={1}
                         style={{ wordBreak: 'break-all' }}
                       >
-                        Tên file: <b>{fileInfo?.name || '-/-'}</b>
+                        Tên file: <b>{file || '-/-'}</b>
                       </Text>
                       <Text fz={14}>
-                        Kích thước: <b>{utils.format.numberToBytes(fileInfo?.size || 0)}</b>
+                        Kích thước: <b>{utils.format.numberToBytes(fileSize || 0)}</b>
                       </Text>
                     </Stack>
                   </Input.Wrapper>
@@ -231,16 +371,20 @@ export default function ReportManagementModal({
                     ref={inputFileRef}
                     accept="application/pdf"
                     type="file"
-                    onChange={handleUploadFile}
+                    onChange={handleUploadFileReport}
                   />
-                  <Button onClick={() => inputFileRef.current?.click()}>Chọn file</Button>
+                  {isUploading ? (
+                    <UploadFileProgress />
+                  ) : (
+                    <Button onClick={() => inputFileRef.current?.click()}>Chọn file</Button>
+                  )}
                 </Stack>
               )}
             />
 
             <Controller
               control={control}
-              name="image"
+              name="thumbnail"
               render={({ field, fieldState }) => (
                 <Stack>
                   <Input.Wrapper label="Ảnh báo cáo" error={fieldState.error?.message}>
@@ -299,9 +443,9 @@ export default function ReportManagementModal({
                     value={field.value || null}
                     data={provinceList?.map((e) => ({ label: e.name, value: e._id }))}
                     onChange={(e) => {
-                      setValue('province', e || undefined);
+                      setValue('province', e || '');
                       setError('province', {});
-                      setValue('ward', undefined); // Reset ward when province changes
+                      setValue('ward', ''); // Reset ward when province changes
                     }}
                   />
                 )}
@@ -344,8 +488,9 @@ export default function ReportManagementModal({
                   <NumberInput
                     {...field}
                     required
-                    label="Giá tiền"
-                    placeholder="Nhập giá tiền"
+                    label="Giá tiền (VNĐ)"
+                    placeholder="Nhập giá tiền (VNĐ)"
+                    thousandSeparator=","
                     error={fieldState.error?.message}
                     value={field.value || ''}
                   />
@@ -376,17 +521,24 @@ export default function ReportManagementModal({
               error={errors.description?.message}
             />
 
-            <Controller
-              control={control}
-              name="status"
-              render={({ field }) => (
-                <Switch
-                  label="Trạng thái"
-                  checked={field.value}
-                  onChange={(e) => setValue('status', e.target.checked)}
-                />
-              )}
-            />
+            {isUpdate && (
+              <Controller
+                control={control}
+                name="status"
+                render={({ field }) => (
+                  <Switch
+                    label="Trạng thái"
+                    checked={field.value === EREPORT_STATUS.ENABLED}
+                    onChange={(e) =>
+                      setValue(
+                        'status',
+                        e.target.checked ? EREPORT_STATUS.ENABLED : EREPORT_STATUS.DISABLED
+                      )
+                    }
+                  />
+                )}
+              />
+            )}
           </Stack>
         </Box>
       </BaseModal>
